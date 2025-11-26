@@ -23,7 +23,11 @@ const App: React.FC = () => {
   useEffect(() => {
     // Initialize chat with General context
     const resetChat = async () => {
-      await initializeChat(SchemeType.GENERAL);
+      try {
+        await initializeChat(SchemeType.GENERAL);
+      } catch (e) {
+        console.error("Init error:", e);
+      }
     };
     resetChat();
   }, []);
@@ -95,12 +99,13 @@ const App: React.FC = () => {
           }
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
+      const errorMsg = error.message || "Unknown error occurred.";
       setMessages(prev => [...prev, {
         id: Date.now().toString(),
         role: Role.MODEL,
-        text: "I apologize, but I'm having trouble connecting to the service right now. Please check your internet or try again later.",
+        text: `Error: ${errorMsg}\n\nPlease ensure your API Key is configured correctly.`,
         isError: true,
         timestamp: Date.now()
       }]);

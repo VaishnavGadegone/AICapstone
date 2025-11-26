@@ -9,10 +9,12 @@ let currentScheme: SchemeType = SchemeType.GENERAL;
 // Helper to get initialized AI client safely
 const getAIClient = () => {
   if (!ai) {
-    const apiKey = process.env.API_KEY;
+    // Robustly check for API Key in standard process.env or Vite's import.meta.env
+    const apiKey = process.env.API_KEY || (import.meta as any).env?.API_KEY;
+    
     if (!apiKey) {
-      console.error("API_KEY is missing in environment variables");
-      throw new Error("API Key missing");
+      console.error("API_KEY is missing. Please add it to your environment variables.");
+      throw new Error("API Key is missing in environment variables.");
     }
     ai = new GoogleGenAI({ apiKey });
   }
@@ -23,11 +25,11 @@ const getAIClient = () => {
  * Generates a vector embedding for the user query and searches the Pinecone index.
  */
 const searchKnowledgeBase = async (query: string): Promise<string | null> => {
-  const apiKey = process.env.PINECONE_API_KEY;
-  const indexHost = process.env.PINECONE_INDEX_HOST;
+  const apiKey = process.env.PINECONE_API_KEY || (import.meta as any).env?.PINECONE_API_KEY;
+  const indexHost = process.env.PINECONE_INDEX_HOST || (import.meta as any).env?.PINECONE_INDEX_HOST;
 
   if (!apiKey || !indexHost) {
-    console.warn("Pinecone credentials missing. Skipping RAG.");
+    // Only warn once or debug level to avoid cluttering console if RAG isn't set up
     return null;
   }
 
@@ -57,7 +59,8 @@ const searchKnowledgeBase = async (query: string): Promise<string | null> => {
     });
 
     if (!response.ok) {
-      throw new Error(`Pinecone query failed: ${response.statusText}`);
+      console.warn(`Pinecone query failed: ${response.statusText}`);
+      return null;
     }
 
     const data = await response.json();
@@ -93,7 +96,7 @@ export const initializeChat = async (scheme: SchemeType) => {
   try {
     const aiClient = getAIClient();
     chatSession = aiClient.chats.create({
-      model: 'gemini-3-pro-preview',
+      model: 'gemini-2.5-flash', // Switched to Flash for better stability and speed
       config: {
         systemInstruction: specificInstruction,
         temperature: 0.3, 
@@ -101,22 +104,22 @@ export const initializeChat = async (scheme: SchemeType) => {
       },
     });
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to initialize chat:", error);
-    return false;
+    throw error; // Propagate error to let UI know
   }
 };
 
 export const sendMessageStream = async (text: string): Promise<AsyncIterable<GenerateContentResponse> | null> => {
-  if (!chatSession) {
-    await initializeChat(currentScheme);
-  }
-
-  if (!chatSession) {
-    throw new Error("Chat session could not be established.");
-  }
-
   try {
+    if (!chatSession) {
+      await initializeChat(currentScheme);
+    }
+
+    if (!chatSession) {
+      throw new Error("Chat session could not be established.");
+    }
+
     // 1. Retrieve relevant context from Pinecone
     const context = await searchKnowledgeBase(text);
     
