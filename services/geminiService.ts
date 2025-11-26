@@ -2,28 +2,39 @@ import { GoogleGenAI, Chat, GenerateContentResponse } from "@google/genai";
 import { SEVA_SETU_SYSTEM_INSTRUCTION } from "../constants";
 import { SchemeType } from "../types";
 
-// Initialize Gemini Client
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
-// Pinecone Configuration
-const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
-const PINECONE_INDEX_HOST = process.env.PINECONE_INDEX_HOST;
-
+let ai: GoogleGenAI | null = null;
 let chatSession: Chat | null = null;
 let currentScheme: SchemeType = SchemeType.GENERAL;
+
+// Helper to get initialized AI client safely
+const getAIClient = () => {
+  if (!ai) {
+    const apiKey = process.env.API_KEY;
+    if (!apiKey) {
+      console.error("API_KEY is missing in environment variables");
+      throw new Error("API Key missing");
+    }
+    ai = new GoogleGenAI({ apiKey });
+  }
+  return ai;
+};
 
 /**
  * Generates a vector embedding for the user query and searches the Pinecone index.
  */
 const searchKnowledgeBase = async (query: string): Promise<string | null> => {
-  if (!PINECONE_API_KEY || !PINECONE_INDEX_HOST) {
+  const apiKey = process.env.PINECONE_API_KEY;
+  const indexHost = process.env.PINECONE_INDEX_HOST;
+
+  if (!apiKey || !indexHost) {
     console.warn("Pinecone credentials missing. Skipping RAG.");
     return null;
   }
 
   try {
     // 1. Generate Embedding using Gemini
-    const embeddingResp = await ai.models.embedContent({
+    const aiClient = getAIClient();
+    const embeddingResp = await aiClient.models.embedContent({
       model: 'text-embedding-004',
       contents: [{ parts: [{ text: query }] }]
     });
@@ -32,10 +43,10 @@ const searchKnowledgeBase = async (query: string): Promise<string | null> => {
     if (!vector) return null;
 
     // 2. Query Pinecone Index
-    const response = await fetch(`${PINECONE_INDEX_HOST}/query`, {
+    const response = await fetch(`${indexHost}/query`, {
       method: 'POST',
       headers: {
-        'Api-Key': PINECONE_API_KEY,
+        'Api-Key': apiKey,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
@@ -80,7 +91,8 @@ export const initializeChat = async (scheme: SchemeType) => {
   }
 
   try {
-    chatSession = ai.chats.create({
+    const aiClient = getAIClient();
+    chatSession = aiClient.chats.create({
       model: 'gemini-3-pro-preview',
       config: {
         systemInstruction: specificInstruction,
