@@ -1,20 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { SCHEMES } from './constants';
 import { SchemeType, Message, Role, Source } from './types';
 import { initializeChat, sendMessageStream } from './services/geminiService';
 import EmergencyBanner from './components/EmergencyBanner';
-import SchemeCard from './components/SchemeCard';
 import ChatMessage from './components/ChatMessage';
 import { SendIcon, LoaderIcon } from './components/Icons';
 
 const App: React.FC = () => {
-  const [activeScheme, setActiveScheme] = useState<SchemeType>(SchemeType.GENERAL);
+  // Default to GENERAL context; let RAG + Agent handle specific schemes based on query
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
       role: Role.MODEL,
-      text: "Namaste! I am Seva-Setu. I can assist with **Mission Shakti** (Women's Safety/Empowerment), **Mission Vatsalya** (Child Protection), or **Poshan 2.0** (Nutrition).\n\nTo help me guide you better, could you please tell me who you are inquiring for today?",
+      text: "Namaste! I am Seva-Setu, your guide for **Mission Shakti**, **Mission Vatsalya**, and **Poshan 2.0**.\n\nHow can I assist you today? You can ask about eligibility, benefits, or application processes.",
       timestamp: Date.now()
     }
   ]);
@@ -23,12 +21,12 @@ const App: React.FC = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    // Initialize chat when scheme changes
+    // Initialize chat with General context
     const resetChat = async () => {
-      await initializeChat(activeScheme);
+      await initializeChat(SchemeType.GENERAL);
     };
     resetChat();
-  }, [activeScheme]);
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -131,28 +129,16 @@ const App: React.FC = () => {
       {/* Main Layout */}
       <main className="flex-1 flex flex-col max-w-5xl mx-auto w-full p-4 gap-4 h-[calc(100vh-48px)]">
         
-        {/* Header Section (Non-scrollable in mobile, sticky) */}
-        <div className="flex-none space-y-4">
+        {/* Header Section */}
+        <div className="flex-none py-2">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Seva-Setu <span className="text-rose-600">.</span></h1>
               <p className="text-slate-500 text-sm">WCD Digital Sahayak (Powered by Gemini 3)</p>
             </div>
             <div className="hidden sm:block text-right">
-              <span className="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded">Beta v1.1</span>
+              <span className="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded">Beta v1.2</span>
             </div>
-          </div>
-
-          {/* Scheme Selector */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {Object.values(SCHEMES).map((scheme) => (
-              <SchemeCard
-                key={scheme.id}
-                scheme={scheme}
-                isSelected={activeScheme === scheme.id}
-                onClick={() => setActiveScheme(scheme.id)}
-              />
-            ))}
           </div>
         </div>
 
@@ -185,7 +171,7 @@ const App: React.FC = () => {
                 value={input}
                 onChange={adjustTextareaHeight}
                 onKeyDown={handleKeyDown}
-                placeholder={`Ask about ${SCHEMES[activeScheme].title} or describe your situation...`}
+                placeholder="Ask about Mission Shakti, Vatsalya, or Poshan 2.0..."
                 className="w-full bg-transparent border-none focus:ring-0 p-3 max-h-[120px] resize-none text-slate-700 placeholder:text-slate-400"
                 rows={1}
                 disabled={isLoading}
