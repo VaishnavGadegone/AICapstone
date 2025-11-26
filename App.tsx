@@ -13,7 +13,8 @@ const App: React.FC = () => {
       id: 'welcome',
       role: Role.MODEL,
       text: "Namaste! I am **JanSathi AI**, your guide for **Mission Shakti**, **Mission Vatsalya**, and **Poshan 2.0**.\n\nHow can I assist you today? You can ask about eligibility, benefits, or application processes.",
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      actions: ["Check Eligibility", "Mission Shakti", "PMMVY Benefits", "Track Application"]
     }
   ]);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,19 +37,21 @@ const App: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSend = async () => {
-    if (!input.trim() || isLoading) return;
+  const handleSend = async (textOverride?: string) => {
+    const textToSend = textOverride || input.trim();
+    if (!textToSend || isLoading) return;
 
-    const userText = input.trim();
-    setInput('');
-    if (textareaRef.current) {
-        textareaRef.current.style.height = 'auto';
+    if (!textOverride) {
+      setInput('');
+      if (textareaRef.current) {
+          textareaRef.current.style.height = 'auto';
+      }
     }
 
     const newMessage: Message = {
       id: Date.now().toString(),
       role: Role.USER,
-      text: userText,
+      text: textToSend,
       timestamp: Date.now()
     };
 
@@ -56,7 +59,7 @@ const App: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const streamResult = await sendMessageStream(userText);
+      const streamResult = await sendMessageStream(textToSend);
       
       if (!streamResult) throw new Error("No response stream");
 
@@ -72,6 +75,7 @@ const App: React.FC = () => {
       }]);
 
       let sources: Source[] = [];
+      const actionTagRegex = /<actions>(.*?)<\/actions>/s;
 
       for await (const chunk of streamResult) {
           const chunkText = chunk.text;
@@ -91,9 +95,31 @@ const App: React.FC = () => {
 
           if (chunkText) {
               fullResponseText += chunkText;
+
+              // Parse actions if tag exists
+              let displayText = fullResponseText;
+              let actions: string[] | undefined;
+
+              const match = fullResponseText.match(actionTagRegex);
+              if (match) {
+                try {
+                  // Attempt to parse the JSON array inside the tags
+                  actions = JSON.parse(match[1]);
+                  // Remove the tag from the display text
+                  displayText = fullResponseText.replace(actionTagRegex, '').trim();
+                } catch (e) {
+                  // If JSON is incomplete (streaming), we ignore it for now
+                }
+              }
+
               setMessages(prev => prev.map(msg => 
                   msg.id === responseMsgId 
-                  ? { ...msg, text: fullResponseText, sources: sources.length > 0 ? sources : undefined }
+                  ? { 
+                      ...msg, 
+                      text: displayText, 
+                      sources: sources.length > 0 ? sources : undefined,
+                      actions: actions
+                    }
                   : msg
               ));
           }
@@ -161,7 +187,11 @@ const App: React.FC = () => {
           <div className="flex-1 overflow-y-auto p-4 sm:p-6 scrollbar-hide">
             <div className="flex flex-col space-y-2">
               {messages.map((msg) => (
-                <ChatMessage key={msg.id} message={msg} />
+                <ChatMessage 
+                  key={msg.id} 
+                  message={msg} 
+                  onActionClick={(action) => handleSend(action)}
+                />
               ))}
               {isLoading && messages.length > 0 && messages[messages.length-1].role === Role.USER && (
                  <div className="flex justify-start w-full mb-6">
@@ -189,7 +219,7 @@ const App: React.FC = () => {
                 disabled={isLoading}
               />
               <button
-                onClick={handleSend}
+                onClick={() => handleSend()}
                 disabled={isLoading || !input.trim()}
                 className={`mb-2 mr-2 p-2 rounded-lg transition-colors
                   ${input.trim() && !isLoading 

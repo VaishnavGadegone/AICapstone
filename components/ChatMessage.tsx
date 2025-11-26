@@ -1,12 +1,13 @@
 import React from 'react';
 import { Message, Role } from '../types';
-import { ShieldAlertIcon, InfoIcon } from './Icons';
+import { InfoIcon } from './Icons';
 
 interface ChatMessageProps {
   message: Message;
+  onActionClick?: (action: string) => void;
 }
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({ message, onActionClick }) => {
   const isUser = message.role === Role.USER;
   
   const formatText = (text: string) => {
@@ -28,7 +29,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   };
 
   return (
-    <div className={`flex w-full mb-6 ${isUser ? 'justify-end' : 'justify-start'}`}>
+    <div className={`flex flex-col w-full mb-6 ${isUser ? 'items-end' : 'items-start'}`}>
       <div 
         className={`max-w-[85%] sm:max-w-[75%] rounded-2xl px-5 py-4 shadow-sm text-sm sm:text-base leading-relaxed
           ${isUser 
@@ -70,6 +71,21 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
           </div>
         )}
       </div>
+
+      {/* Suggested Actions (Chips) */}
+      {!isUser && message.actions && message.actions.length > 0 && (
+        <div className="flex flex-wrap gap-2 mt-3 ml-2 max-w-[90%]">
+          {message.actions.map((action, idx) => (
+            <button
+              key={idx}
+              onClick={() => onActionClick?.(action)}
+              className="px-3 py-1.5 bg-white border border-rose-200 text-rose-600 text-xs sm:text-sm font-medium rounded-full shadow-sm hover:bg-rose-50 hover:border-rose-300 transition-all active:scale-95 whitespace-nowrap"
+            >
+              {action}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -15,6 +15,7 @@ export interface Message {
   isError?: boolean;
   timestamp: number;
   sources?: Source[];
+  actions?: string[]; // Suggested quick replies
 }
 
 export enum SchemeType {
