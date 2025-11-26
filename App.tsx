@@ -3,7 +3,7 @@ import { SchemeType, Message, Role, Source } from './types';
 import { initializeChat, sendMessageStream } from './services/geminiService';
 import EmergencyBanner from './components/EmergencyBanner';
 import ChatMessage from './components/ChatMessage';
-import { SendIcon, LoaderIcon } from './components/Icons';
+import { SendIcon, LoaderIcon, JanSathiLogo } from './components/Icons';
 
 const App: React.FC = () => {
   // Default to GENERAL context; let RAG + Agent handle specific schemes based on query
@@ -12,7 +12,7 @@ const App: React.FC = () => {
     {
       id: 'welcome',
       role: Role.MODEL,
-      text: "Namaste! I am Seva-Setu, your guide for **Mission Shakti**, **Mission Vatsalya**, and **Poshan 2.0**.\n\nHow can I assist you today? You can ask about eligibility, benefits, or application processes.",
+      text: "Namaste! I am **JanSathi AI**, your guide for **Mission Shakti**, **Mission Vatsalya**, and **Poshan 2.0**.\n\nHow can I assist you today? You can ask about eligibility, benefits, or application processes.",
       timestamp: Date.now()
     }
   ]);
@@ -132,9 +132,16 @@ const App: React.FC = () => {
         {/* Header Section */}
         <div className="flex-none py-2">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Seva-Setu <span className="text-rose-600">.</span></h1>
-              <p className="text-slate-500 text-sm">WCD Digital Sahayak (Powered by Gemini 3)</p>
+            <div className="flex items-center gap-3">
+              <JanSathiLogo className="w-10 h-10 sm:w-12 sm:h-12" />
+              <div>
+                <h1 className="text-2xl font-bold text-slate-900 tracking-tight leading-none">
+                  JanSathi <span className="text-orange-500">AI</span>
+                </h1>
+                <p className="text-slate-500 text-xs font-bold tracking-wide uppercase mt-0.5">
+                  A Government Welfare Chatbot
+                </p>
+              </div>
             </div>
             <div className="hidden sm:block text-right">
               <span className="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded">Beta v1.2</span>

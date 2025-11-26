@@ -1,5 +1,5 @@
 import { GoogleGenAI, Chat, GenerateContentResponse } from "@google/genai";
-import { SEVA_SETU_SYSTEM_INSTRUCTION } from "../constants";
+import { JANSATHI_SYSTEM_INSTRUCTION } from "../constants";
 import { SchemeType } from "../types";
 
 let ai: GoogleGenAI | null = null;
@@ -82,7 +82,7 @@ const searchKnowledgeBase = async (query: string): Promise<string | null> => {
 export const initializeChat = async (scheme: SchemeType) => {
   currentScheme = scheme;
   
-  let specificInstruction = SEVA_SETU_SYSTEM_INSTRUCTION;
+  let specificInstruction = JANSATHI_SYSTEM_INSTRUCTION;
   
   if (scheme !== SchemeType.GENERAL) {
     specificInstruction += `\n\nCONTEXTUAL NOTE: The user has currently selected the **${scheme}** tab. 

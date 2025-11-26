@@ -23,3 +23,27 @@ export const InfoIcon = ({ className }: { className?: string }) => (
 export const LoaderIcon = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`${className} animate-spin`}><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
 );
+
+export const JanSathiLogo = ({ className }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" className={className} fill="none">
+    {/* Blue Chat Bubble Outline */}
+    <path 
+      d="M20 50 C20 30 35 15 50 15 C75 15 90 30 90 50 C90 70 75 85 50 85 C42 85 35 82 28 78 L15 85 L18 70 C15 64 15 58 15 50" 
+      stroke="#1e3a8a" 
+      strokeWidth="7" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+    />
+    {/* Green Person Fill */}
+    <circle cx="50" cy="45" r="9" fill="#10b981" />
+    <path d="M34 78 C34 65 41 58 50 58 C59 58 66 65 66 78" fill="#10b981" />
+    
+    {/* Orange Swoosh */}
+    <path 
+      d="M10 45 C10 15 35 5 50 5 C75 5 95 25 95 45" 
+      stroke="#f97316" 
+      strokeWidth="7" 
+      strokeLinecap="round" 
+    />
+  </svg>
+);
