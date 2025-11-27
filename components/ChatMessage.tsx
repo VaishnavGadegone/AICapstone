@@ -6,7 +6,7 @@ import { InfoIcon, ShieldAlertIcon } from './Icons';
 // 🔧 CUSTOM CONFIGURATION
 // ----------------------------------------------------------------------
 // Replace this URL with your custom image for Asha's avatar
-const ASHA_AVATAR_URL = "https://api.dicebear.com/9.x/avataaars/svg?seed=Asha&backgroundColor=ffdfbf";
+const ASHA_AVATAR_URL = "https://raw.githubusercontent.com/VaishnavGadegone/AICapstone/refs/heads/main/Avatar.svg?token=GHSAT0AAAAAADP7OLPYSX252UR7SQWIUBFS2JIEKCA";
 // ----------------------------------------------------------------------
 
 interface ChatMessageProps {
