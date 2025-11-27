@@ -13,7 +13,7 @@ import { SendIcon, LoaderIcon, JanSathiLogo, MicIcon, SquareIcon } from './compo
 const ASHA_AVATAR_URL = ""; 
 
 // Optional: Custom Logo URL
-const CUSTOM_LOGO_URL = ""; 
+const CUSTOM_LOGO_URL = "https://raw.githubusercontent.com/VaishnavGadegone/AICapstone/refs/heads/main/logo.svg?token=GHSAT0AAAAAADP7OLPZP7OSMUZIX2P6NRJQ2JID3VQ"; 
 // ----------------------------------------------------------------------
 
 const App: React.FC = () => {
