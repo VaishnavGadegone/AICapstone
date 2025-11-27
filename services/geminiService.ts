@@ -9,8 +9,8 @@ let currentScheme: SchemeType = SchemeType.GENERAL;
 // Helper to get initialized AI client safely
 const getAIClient = () => {
   if (!ai) {
-    // Robustly check for API Key in standard process.env or Vite's import.meta.env
-    const apiKey = process.env.API_KEY || (import.meta as any).env?.API_KEY;
+    // The API key must be obtained exclusively from the environment variable process.env.API_KEY
+    const apiKey = process.env.API_KEY;
     
     if (!apiKey) {
       console.error("API_KEY is missing. Please add it to your environment variables.");
@@ -25,8 +25,8 @@ const getAIClient = () => {
  * Generates a vector embedding for the user query and searches the Pinecone index.
  */
 const searchKnowledgeBase = async (query: string): Promise<string | null> => {
-  const apiKey = process.env.PINECONE_API_KEY || (import.meta as any).env?.PINECONE_API_KEY;
-  const indexHost = process.env.PINECONE_INDEX_HOST || (import.meta as any).env?.PINECONE_INDEX_HOST;
+  const apiKey = process.env.PINECONE_API_KEY;
+  const indexHost = process.env.PINECONE_INDEX_HOST;
 
   if (!apiKey || !indexHost) {
     // Only warn once or debug level to avoid cluttering console if RAG isn't set up

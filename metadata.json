@@ -1,5 +1,7 @@
 {
-  "name": "JanSathi AI",
-  "description": "JanSathi AI - A Government Welfare Chatbot for India's Ministry of Women & Child Development schemes.",
-  "requestFramePermissions": []
+  "name": "Asha",
+  "description": "Asha - A Government Welfare Chatbot for India's Ministry of Women & Child Development schemes.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
 }
