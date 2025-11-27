@@ -55,3 +55,20 @@ export const JanSathiLogo = ({ className }: { className?: string }) => (
     />
   </svg>
 );
+
+export const AshaAvatar = ({ className }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" className={className} fill="none">
+    <circle cx="50" cy="50" r="50" fill="#FFE0B2" />
+    {/* Hair/Bun */}
+    <path d="M50 20C35 20 25 35 25 50C25 55 26 60 28 65L72 65C74 60 75 55 75 50C75 35 65 20 50 20Z" fill="#3E2723" />
+    <circle cx="50" cy="18" r="8" fill="#3E2723" />
+    {/* Face */}
+    <path d="M28 65L28 68C28 85 38 92 50 92C62 92 72 85 72 68L72 65" fill="#D7CCC8" />
+    <circle cx="50" cy="50" r="23" fill="#D7CCC8" />
+    {/* Bindi */}
+    <circle cx="50" cy="42" r="2" fill="#D32F2F" />
+    {/* Sari */}
+    <path d="M15 100C15 80 30 75 50 75C70 75 85 80 85 100" fill="#E65100" />
+    <path d="M50 75C30 75 25 100 25 100L75 100C75 100 70 75 50 75" fill="#FB8C00" opacity="0.8" />
+  </svg>
+);
