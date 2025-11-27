@@ -129,6 +129,9 @@ export const sendMessageStream = async (text: string): Promise<AsyncIterable<Gen
       messageToSend = `Use the following context from the official Ministry knowledge base to answer the user's question. If the answer is in the context, cite it. If not, use Google Search.\n\n` +
                       `**RETRIEVED CONTEXT:**\n${context}\n\n` +
                       `**USER QUESTION:**\n${text}`;
+    } else {
+      // Add explicit instruction to the model to prioritize government sources even without context
+      messageToSend = `${text}\n\n(IMPORTANT: Answer using ONLY official Government of India sources ending in .gov.in or .nic.in)`;
     }
 
     // 3. Send to Gemini
