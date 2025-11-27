@@ -3,6 +3,7 @@ import { SchemeType, Message, Role, Source } from './types';
 import { initializeChat, sendMessageStream } from './services/geminiService';
 import EmergencyBanner from './components/EmergencyBanner';
 import ChatMessage from './components/ChatMessage';
+import TermsModal from './components/TermsModal';
 import { SendIcon, LoaderIcon, JanSathiLogo, MicIcon, SquareIcon } from './components/Icons';
 
 // ----------------------------------------------------------------------
@@ -11,7 +12,7 @@ import { SendIcon, LoaderIcon, JanSathiLogo, MicIcon, SquareIcon } from './compo
 
 // Optional: Custom Logo URL
 // If provided, this image will replace BOTH the icon and the "JanSathi AI" text heading.
-const CUSTOM_LOGO_URL = "https://raw.githubusercontent.com/VaishnavGadegone/AICapstone/refs/heads/main/logo.svg"; 
+const CUSTOM_LOGO_URL = ""; 
 // ----------------------------------------------------------------------
 
 const App: React.FC = () => {
@@ -28,11 +29,19 @@ const App: React.FC = () => {
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [showTerms, setShowTerms] = useState(true);
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
+    // Check if terms have been accepted previously
+    const termsAccepted = localStorage.getItem('jansathi_terms_accepted_v1');
+    if (termsAccepted === 'true') {
+      setShowTerms(false);
+    }
+
     // Initialize chat with General context
     const resetChat = async () => {
       try {
@@ -82,6 +91,11 @@ const App: React.FC = () => {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  const handleAcceptTerms = () => {
+    localStorage.setItem('jansathi_terms_accepted_v1', 'true');
+    setShowTerms(false);
+  };
 
   const toggleListening = () => {
     if (!recognitionRef.current) {
@@ -225,6 +239,9 @@ const App: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen w-full relative font-inter text-slate-900 overflow-hidden">
+      
+      {/* Terms and Conditions Modal */}
+      {showTerms && <TermsModal onAccept={handleAcceptTerms} />}
           
       <EmergencyBanner />
 
