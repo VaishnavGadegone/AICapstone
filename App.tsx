@@ -12,7 +12,7 @@ import { SendIcon, LoaderIcon, JanSathiLogo, MicIcon, SquareIcon } from './compo
 
 // Optional: Custom Logo URL
 // If provided, this image will replace BOTH the icon and the "JanSathi AI" text heading.
-const CUSTOM_LOGO_URL = ""; 
+const CUSTOM_LOGO_URL = "https://raw.githubusercontent.com/VaishnavGadegone/AICapstone/refs/heads/main/logo.svg"; 
 // ----------------------------------------------------------------------
 
 const App: React.FC = () => {
